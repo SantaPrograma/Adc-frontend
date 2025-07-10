@@ -1,0 +1,40 @@
+.btnSendMessage {
+    padding: 8px 24px;
+    border-radius: 8px;
+    border: 3px solid #1abc9c;
+    box-shadow: 2px 2px 1px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    background-color: #1abc9c;
+    overflow: hidden;
+    position: relative;
+    z-index: 10;
+    transition: background-color 0.3s ease-in;
+  }
+  
+  .btnSendMessage::after {
+    content: "";
+    position: absolute;
+    background-color: #16a085;
+    width: 0px;
+    height: 0px;
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: all .3s ease-in;
+    z-index: -1;
+  }
+  
+  .btnSendMessage:hover {
+    background-color: #16a085;
+  }
+  
+  .btnSendMessage:hover::after {
+    transform-origin: center;
+    transition: all .3s ease-in;
+    width: 140px;
+    height: 140px;
+  }
+  

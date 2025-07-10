@@ -1,0 +1,125 @@
+/* Header */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1rem 2.5rem;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  z-index: 1000;
+}
+
+.header.transparent {
+  background-color: rgba(34, 49, 63, 0.3);
+  box-shadow: none;
+}
+
+.header.scrolled {
+  background-color: #4ea734;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header a {
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+header a:hover {
+  color: white;
+  border-bottom: 2px solid white;
+  transform: scale(1.2);
+}
+
+.header .flex.items-center p {
+  color: white;
+}
+
+.header .flex.items-center p:hover {
+  color: white;
+}
+
+/* Footer */
+.footer {
+  background-color: #1f3225;
+  color: white;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-column {
+  flex: 1;
+  margin: 0 20px;
+  min-width: 250px;
+}
+
+.footer-column h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #6dd47e;
+  padding-bottom: 5px;
+  color: #6dd47e;
+  font-weight: bold;
+}
+
+.footer-column p,
+.footer-column ul,
+.footer-column a {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  color: white;
+  text-decoration: none;
+}
+
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-column a:hover,
+.footer-column ul li a:hover,
+.social-icons a:hover {
+  text-decoration: underline;
+}
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+.social-icons a {
+  color: white;
+  text-decoration: none;
+  font-size: 3rem;
+  transition: transform 0.2s ease;
+}
+
+.social-icons a:hover {
+  transform: scale(1.2);
+}
+
+/* Derechos Reservados */
+.copyright {
+  background-color: #3e9b00;
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 0.9rem;
+}
