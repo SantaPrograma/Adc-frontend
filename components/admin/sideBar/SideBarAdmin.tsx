@@ -31,6 +31,7 @@ export default function SideBarAdmin() {
         </Link>
       </div>
       <nav className="p-4 space-y-4">
+
         {/* Usuarios */}
         <div className="space-y-2">
           <button
@@ -54,21 +55,21 @@ export default function SideBarAdmin() {
           )}
         </div>
 
-        {/* Contáctanos */}
+        {/* Matriculas */}
         <div className="space-y-2">
           <button
-            onClick={() => toggleMenu("contactanos")}
+            onClick={() => toggleMenu("matriculas")}
             className="w-full text-left font-semibold py-3 px-4 hover:bg-gray-800 rounded flex justify-between items-center"
           >
-            <span>Contáctanos</span>
+            <span>Matrículas</span>
             <FaChevronDown
-              className={`transition-transform duration-200 ${isOpen("contactanos") ? "rotate-180" : ""}`}
+              className={`transition-transform duration-200 ${isOpen("matriculas") ? "rotate-180" : ""}`}
             />
           </button>
-          {isOpen("contactanos") && (
+          {isOpen("matriculas") && (
             <ul className="pl-6 text-sm space-y-2 mt-2">
               <li>
-                <Link href="/administrativo/contactanos/listar" className="block hover:text-emerald-400">Listar mensajes</Link>
+                <Link href="/administrativo/matricula/listar" className="block hover:text-emerald-400">Listar matrículas</Link>
               </li>
             </ul>
           )}
@@ -119,6 +120,27 @@ export default function SideBarAdmin() {
             </ul>
           )}
         </div>
+
+        {/* Contáctanos */}
+        <div className="space-y-2">
+          <button
+            onClick={() => toggleMenu("contactanos")}
+            className="w-full text-left font-semibold py-3 px-4 hover:bg-gray-800 rounded flex justify-between items-center"
+          >
+            <span>Contáctanos</span>
+            <FaChevronDown
+              className={`transition-transform duration-200 ${isOpen("contactanos") ? "rotate-180" : ""}`}
+            />
+          </button>
+          {isOpen("contactanos") && (
+            <ul className="pl-6 text-sm space-y-2 mt-2">
+              <li>
+                <Link href="/administrativo/contactanos/listar" className="block hover:text-emerald-400">Listar mensajes</Link>
+              </li>
+            </ul>
+          )}
+        </div>
+
       </nav>
 
       {/* Cierre de sesión */}
