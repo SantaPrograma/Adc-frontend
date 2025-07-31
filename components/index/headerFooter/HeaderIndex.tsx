@@ -40,6 +40,7 @@ export default function HeaderIndex({ scrollDistance = 400 }) {
           <a href="/nosotros" className="text-white font-bold px-4">Nosotros</a>
           <a href="/faq" className="text-white font-bold px-4">FAQ</a>
           <a href="/contactanos" className="text-white font-bold px-4">Contáctanos</a>
+          <a href="/login" className="text-white font-bold px-4">Login</a>
         </nav>
       </div>
     </header>

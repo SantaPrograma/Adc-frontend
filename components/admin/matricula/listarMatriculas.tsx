@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { FaEye, FaCheck, FaTimes } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import ModalDetalleMatricula from "./ModalDetalleMatricula";
 
 interface Matricula {
     id: number;
@@ -25,6 +26,9 @@ export function ListarMatriculas() {
 
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+
+    const [mostrarModal, setMostrarModal] = useState(false);
+    const [detalleMatricula, setDetalleMatricula] = useState(null);
 
     const token = sessionStorage.getItem("authToken");
 
@@ -60,6 +64,25 @@ export function ListarMatriculas() {
             setError(err.message || "Error desconocido");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const abrirModal = async (id: number) => {
+        try {
+            const res = await fetch(`http://localhost:3001/api/matricula/detalle/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!res.ok) throw new Error("No se pudo obtener el detalle");
+
+            const data = await res.json();
+            setDetalleMatricula(data);
+            setMostrarModal(true);
+        } catch (error) {
+            console.error("Error al abrir el modal:", error);
+            setError("Hubo un error al obtener los detalles.");
         }
     };
 
@@ -178,13 +201,13 @@ export function ListarMatriculas() {
                                     </td>
                                     <td className="py-3 px-4 flex flex-col justify-center items-center space-y-2">
                                         <button
-                                            onClick={() =>
-                                                router.push(`/administrativo/matriculas/ver/${m.id}`)
-                                            }
-                                            className="inline-flex items-center px-3 py-1 rounded-md text-sm bg-blue-600 hover:bg-blue-700 text-white"
+                                            onClick={() => {
+                                                abrirModal(m.id)
+                                            }}
+                                            className="inline-flex items-center px-2 py-1 rounded-md text-sm bg-blue-600 hover:bg-blue-700 text-white"
                                         >
                                             <FaEye className="mr-1" />
-                                            Ver más
+                                            Detalle
                                         </button>
                                         {m.estado === "Pendiente" ? (
                                             <button
@@ -217,6 +240,15 @@ export function ListarMatriculas() {
                     </table>
                 </div>
             )}
+
+            <ModalDetalleMatricula
+                abierto={mostrarModal}
+                onCerrar={() => {
+                    setMostrarModal(false);
+                    setDetalleMatricula(null);
+                }}
+                datos={detalleMatricula}
+            />
 
             <div className="flex items-center space-x-2 mt-6">
                 <button
