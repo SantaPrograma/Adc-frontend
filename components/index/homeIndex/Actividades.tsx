@@ -25,7 +25,7 @@ export default function Actividades() {
         {
           title: "Salidas educativas",
           text: "Nuestros niños exploran el mundo que los rodea a través de excursiones educativas.",
-          img: "/homeSrc/señorluren.jpg",
+          img: "/homeSrc/senorluren.jpg",
           color: "#6000B2",
         },
         {
