@@ -126,7 +126,6 @@ export default function ModalDetalleMatricula({ abierto, onCerrar, datos }: Prop
         <section className="mb-4">
           <h3 className="font-semibold text-lg text-[#15993b] mb-1">Matrícula</h3>
           <Campo label="Estado" valor={estado} />
-          <Campo label="Duración" valor={`${duracion} meses`} />
           <Campo label="Fecha de registro" valor={creadaEn} />
         </section>
 
