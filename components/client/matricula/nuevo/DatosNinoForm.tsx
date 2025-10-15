@@ -39,7 +39,7 @@ export default function DatosNinoForm({ datos, onChange, onNext }: Props) {
         </div>
 
         <div>
-          <label className="block font-medium mb-1">Edad</label>
+          <label className="block font-medium mb-1">Edad (Aula)</label>
           <input type="number" name="edad" value={datos.edad} onChange={handleChange} required min={2} max={5} className="w-full border rounded p-2" />
         </div>
 

@@ -34,6 +34,11 @@ export function HomeClient() {
       onClick: () => manejarClick("/homeClient/renovacion"),
     },
     {
+      src: "/matriculaSrc/Consultar.png",
+      titulo: "Consultar Matrícula",
+      onClick: () => router.push("/homeClient/consulta"),
+    },
+    {
       src: "/matriculaSrc/Salir.png",
       titulo: "Salir",
       onClick: () => {
@@ -48,7 +53,8 @@ export function HomeClient() {
       <h1 className="text-2xl font-bold mb-2">Bienvenido</h1>
       <p className="text-gray-600 mb-4 text-center">
         Si es la primera vez que te matriculas, selecciona <strong>Matricular</strong>. <br />
-        Si ya eres parte del colegio, selecciona <strong>Renovar</strong>.
+        Si ya eres parte del colegio, selecciona <strong>Renovar</strong>. <br />
+        Quieres ver el estado de tu matrícula, selecciona <strong>Consultar matrícula</strong>.
       </p>
 
       {mensaje && (
@@ -57,7 +63,7 @@ export function HomeClient() {
         </p>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
         {botones.map((btn, idx) => (
           <button
             key={idx}

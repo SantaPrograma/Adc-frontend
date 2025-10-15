@@ -1,11 +1,11 @@
-import { HomeClient } from "@/components/client/homeClient/homeClient";
+import { ConsultaMatricula } from "@/components/client/matricula/consulta/ConsultarMatricula";
 import ProtectedRoute from "@/components/provider/ProtectedRoute";
 
 export default function Page() {
   return (
     <main>
       <ProtectedRoute>
-        <HomeClient />
+        <ConsultaMatricula />
       </ProtectedRoute>
     </main>
   );

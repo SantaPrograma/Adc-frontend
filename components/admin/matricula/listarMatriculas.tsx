@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FaEye, FaCheck, FaTimes } from "react-icons/fa";
+import { FaEye, FaCheck, FaTimes, FaRegEdit, FaFilePdf } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import ModalDetalleMatricula from "./ModalDetalleMatricula";
+import ModalObservacion from "./ModalObservacion";
 
 interface Matricula {
     id: number;
@@ -29,6 +30,8 @@ export function ListarMatriculas() {
 
     const [mostrarModal, setMostrarModal] = useState(false);
     const [detalleMatricula, setDetalleMatricula] = useState(null);
+
+    const [observacionSeleccionada, setObservacionSeleccionada] = useState<number | null>(null);
 
     const token = sessionStorage.getItem("authToken");
 
@@ -128,6 +131,37 @@ export function ListarMatriculas() {
                 Lista de matrículas registradas
             </h1>
 
+            <div className="w-full max-w-6xl flex justify-between items-center mb-4">
+                <button
+                    onClick={async () => {
+                        try {
+                            const token = sessionStorage.getItem("authToken");
+                            const res = await fetch("http://localhost:3001/api/matricula/pdf/matriculados", {
+                                headers: { Authorization: `Bearer ${token}` },
+                            });
+                            if (!res.ok) throw new Error("Error al generar PDF");
+
+                            const blob = await res.blob();
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement("a");
+                            a.href = url;
+                            a.download = `matriculados_${new Date().getFullYear()}.pdf`;
+                            document.body.appendChild(a);
+                            a.click();
+                            a.remove();
+                            window.URL.revokeObjectURL(url);
+                        } catch (err) {
+                            console.error(err);
+                            alert("No se pudo descargar el PDF.");
+                        }
+                    }}
+                    className="inline-flex items-center px-2 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded-md shadow"
+                >
+                    <FaFilePdf className="mr-2" />
+                    Exportar
+                </button>
+            </div>
+
             {error && <div className="mb-4 text-red-600">{error}</div>}
 
             {loading ? (
@@ -209,6 +243,13 @@ export function ListarMatriculas() {
                                             <FaEye className="mr-1" />
                                             Detalle
                                         </button>
+                                        <button
+                                            onClick={() => setObservacionSeleccionada(m.id)}
+                                            className="inline-flex items-center px-2 py-1 rounded-md text-sm bg-purple-600 hover:bg-purple-700 text-white"
+                                        >
+                                            <FaRegEdit className="mr-1" />
+                                            Observar
+                                        </button>
                                         {m.estado === "Pendiente" ? (
                                             <button
                                                 onClick={() => cambiarEstado(m.id)}
@@ -249,6 +290,13 @@ export function ListarMatriculas() {
                 }}
                 datos={detalleMatricula}
             />
+
+            {observacionSeleccionada && (
+                <ModalObservacion
+                    idMatricula={observacionSeleccionada}
+                    onClose={() => setObservacionSeleccionada(null)}
+                />
+            )}
 
             <div className="flex items-center space-x-2 mt-6">
                 <button

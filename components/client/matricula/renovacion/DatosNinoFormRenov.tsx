@@ -76,7 +76,7 @@ export default function DatosNinoFormRenov({ datos, onChange, onNext, mensajeBus
         </div>
 
         <div>
-          <label className="block font-medium mb-1">Edad</label>
+          <label className="block font-medium mb-1">Edad (Aula)</label>
           <input type="number" name="edad" value={datos.edad} onChange={handleChange} required min={3} max={6} className="w-full border rounded p-2" />
         </div>
 
