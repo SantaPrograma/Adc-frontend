@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { FaCheck, FaTimes, FaTrashAlt } from "react-icons/fa";
 
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { Box, Chip } from "@mui/material";
+
 interface Mensaje {
   id: number;
   nombre: string;
@@ -25,6 +28,99 @@ export function ListarContactanos() {
   const size = 10;
 
   const token = sessionStorage.getItem("authToken");
+
+  const columns: GridColDef[] = [
+    { field: "id", headerName: "ID", width: 50 },
+    { field: "nombre", headerName: "Nombre", width: 120 },
+    { field: "email", headerName: "Email", width: 180 },
+    { field: "telefono", headerName: "Teléfono", width: 100 },
+    { field: "mensaje", headerName: "Mensaje", width: 200 },
+    {
+      field: "fecha_emision",
+      headerName: "Fecha Emision",
+      width: 180,
+      renderCell: (params) => {
+        if (!params.value) return "-";
+
+        return new Date(params.value as string).toLocaleString("es-PE", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      },
+    },
+    {
+      field: "estado",
+      headerName: "Estado",
+      width: 100,
+      renderCell: (params) =>
+        params.value === "Pendiente" ? (
+          <Chip label="Pendiente" size="small"
+            sx={{
+              backgroundColor: "#fb923c",
+              color: "white",
+              fontWeight: 600,
+            }}
+          />
+        ) : (
+          <Chip label="Atendido" color="success" size="small" />
+        ),
+    },
+    {
+      field: "atendido_por",
+      headerName: "Atendido Por",
+      width: 100
+    },
+    {
+      field: "fecha_atencion",
+      headerName: "Fecha Atención",
+      width: 180,
+      renderCell: (params) => {
+        if (!params.value) return "-";
+
+        return new Date(params.value as string).toLocaleString("es-PE", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      },
+    },
+    {
+      field: "acciones",
+      headerName: "Acciones",
+      width: 150,
+      sortable: false,
+      filterable: false,
+      renderCell: (params) => {
+        const m = params.row;
+
+        return (
+          <div className="flex gap-1">
+            <button
+              onClick={() => handleToggleEstado(m.id)}
+              className={`px-2 py-1 rounded text-xs text-white ${m.estado === "Pendiente"
+                ? "bg-green-600 hover:bg-green-700"
+                : "bg-orange-400 hover:bg-orange-500"
+                }`}
+            >
+              {m.estado === "Pendiente" ? "Atender" : "Pendiente"}
+            </button>
+
+            <button
+              onClick={() => handleEliminar(m.id)}
+              className="px-2 py-1 rounded text-xs bg-red-600 hover:bg-red-700 text-white"
+            >
+              Eliminar
+            </button>
+          </div>
+        );
+      },
+    },
+  ];
 
   const fetchMensajes = async () => {
     try {
@@ -90,119 +186,21 @@ export function ListarContactanos() {
       </h1>
 
       {error && <div className="mb-4 text-red-600">{error}</div>}
-
       {loading ? (
         <p>Cargando mensajes...</p>
       ) : (
-        <div className="overflow-x-auto w-full max-w-6xl">
-          <table className="w-full bg-white shadow-md rounded-lg border">
-            <thead>
-              <tr className="bg-gray-100 text-gray-700 uppercase text-sm">
-                <th className="py-3 px-4 text-left">ID</th>
-                <th className="py-3 px-4 text-left">Nombre</th>
-                <th className="py-3 px-4 text-left">Email</th>
-                <th className="py-3 px-4 text-left">Teléfono</th>
-                <th className="py-3 px-4 text-left">Mensaje</th>
-                <th className="py-3 px-4 text-left">Fecha</th>
-                <th className="py-3 px-4 text-left">Estado</th>
-                <th className="py-3 px-4 text-left">Atendido Por</th>
-                <th className="py-3 px-4 text-left">Fecha Atención</th>
-                <th className="py-3 px-4 text-center">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {mensajes.map((m) => (
-                <tr key={m.id} className="border-t hover:bg-gray-50">
-                  <td className="py-3 px-4">{m.id}</td>
-                  <td className="py-3 px-4">{m.nombre}</td>
-                  <td className="py-3 px-4">{m.email}</td>
-                  <td className="py-3 px-4">{m.telefono}</td>
-                  <td className="py-3 px-4">{m.mensaje}</td>
-                  <td className="py-3 px-4">
-                    {new Date(m.fecha_emision).toLocaleString("es-PE", {
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </td>
-                  <td
-                    className={`py-3 px-4 font-semibold ${m.estado === "Pendiente" ? "text-red-600" : "text-black"
-                      }`}
-                  >
-                    {m.estado}
-                  </td>
-                  <td className="py-3 px-4">{m.atendido_por ?? "-"}</td>
-                  <td className="py-3 px-4">
-                    {m.fecha_atencion
-                      ? new Date(m.fecha_atencion).toLocaleString("es-PE", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
-                      : "-"}
-                  </td>
-                  <td className="py-3 px-4 flex flex-col justify-center items-center space-y-2">
-                    {/* Botón Alternar Estado */}
-                    <button
-                      onClick={() => handleToggleEstado(m.id)}
-                      className={`w-26 flex items-center space-x-2 px-3 py-1 rounded-md text-sm transition ${m.estado === "Pendiente"
-                          ? "bg-green-600 hover:bg-green-700 text-white"
-                          : "bg-orange-400 hover:bg-orange-500 text-white"
-                        }`}
-                    >
-                      {m.estado === "Pendiente" ? <FaCheck /> : <FaTimes />}
-                      <span>
-                        {m.estado === "Pendiente" ? "Atender" : "Pendiente"}
-                      </span>
-                    </button>
-
-                    {/* Botón Eliminar */}
-                    <button
-                      onClick={() => handleEliminar(m.id)}
-                      className="w-26 flex items-center space-x-2 px-3 py-1 rounded-md text-sm bg-red-600 hover:bg-red-700 text-white transition"
-                    >
-                      <FaTrashAlt />
-                      <span>Eliminar</span>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {mensajes.length === 0 && (
-                <tr>
-                  <td colSpan={9} className="text-center py-6 text-gray-400">
-                    No hay mensajes.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <div className="w-full max-w-6xl">
+          <Box sx={{ height: 600, width: "100%" }}>
+            <DataGrid
+              rows={mensajes}
+              columns={columns}
+              loading={loading}
+              pageSizeOptions={[10]}
+              disableRowSelectionOnClick
+            />
+          </Box>
         </div>
       )}
-
-      {/* Paginación */}
-      <div className="flex items-center space-x-2 mt-6">
-        <button
-          onClick={() => setPage((p) => Math.max(p - 1, 1))}
-          disabled={page === 1}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-        >
-          « Anterior
-        </button>
-        <span>
-          Página <strong>{page}</strong> de <strong>{totalPages}</strong>
-        </span>
-        <button
-          onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-          disabled={page === totalPages}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-        >
-          Siguiente »
-        </button>
-      </div>
     </div>
   );
 }
