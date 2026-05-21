@@ -65,6 +65,7 @@ export default function ContactForm() {
 
       setMensajeExito("Mensaje enviado con éxito.");
       setForm({ nombre: "", email: "", telefono: "", mensaje: "" });
+      setAceptaTerminos(false);
       limpiarMensajes();
     } catch (error) {
       console.error("Error:", error);

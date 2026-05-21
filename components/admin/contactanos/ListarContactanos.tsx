@@ -1,10 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FaCheck, FaTimes, FaTrashAlt } from "react-icons/fa";
-
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { Box, Chip } from "@mui/material";
+import DataGrid, {
+  Column,
+  FilterRow,
+  HeaderFilter,
+  Scrolling,
+  LoadPanel,
+  ColumnFixing,
+  Export
+} from "devextreme-react/data-grid";
 
 interface Mensaje {
   id: number;
@@ -22,119 +27,21 @@ export function ListarContactanos() {
   const [mensajes, setMensajes] = useState<Mensaje[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const size = 10;
 
   const token = sessionStorage.getItem("authToken");
-
-  const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 50 },
-    { field: "nombre", headerName: "Nombre", width: 120 },
-    { field: "email", headerName: "Email", width: 180 },
-    { field: "telefono", headerName: "Teléfono", width: 100 },
-    { field: "mensaje", headerName: "Mensaje", width: 200 },
-    {
-      field: "fecha_emision",
-      headerName: "Fecha Emision",
-      width: 180,
-      renderCell: (params) => {
-        if (!params.value) return "-";
-
-        return new Date(params.value as string).toLocaleString("es-PE", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-      },
-    },
-    {
-      field: "estado",
-      headerName: "Estado",
-      width: 100,
-      renderCell: (params) =>
-        params.value === "Pendiente" ? (
-          <Chip label="Pendiente" size="small"
-            sx={{
-              backgroundColor: "#fb923c",
-              color: "white",
-              fontWeight: 600,
-            }}
-          />
-        ) : (
-          <Chip label="Atendido" color="success" size="small" />
-        ),
-    },
-    {
-      field: "atendido_por",
-      headerName: "Atendido Por",
-      width: 100
-    },
-    {
-      field: "fecha_atencion",
-      headerName: "Fecha Atención",
-      width: 180,
-      renderCell: (params) => {
-        if (!params.value) return "-";
-
-        return new Date(params.value as string).toLocaleString("es-PE", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-      },
-    },
-    {
-      field: "acciones",
-      headerName: "Acciones",
-      width: 150,
-      sortable: false,
-      filterable: false,
-      renderCell: (params) => {
-        const m = params.row;
-
-        return (
-          <div className="flex gap-1">
-            <button
-              onClick={() => handleToggleEstado(m.id)}
-              className={`px-2 py-1 rounded text-xs text-white ${m.estado === "Pendiente"
-                ? "bg-green-600 hover:bg-green-700"
-                : "bg-orange-400 hover:bg-orange-500"
-                }`}
-            >
-              {m.estado === "Pendiente" ? "Atender" : "Pendiente"}
-            </button>
-
-            <button
-              onClick={() => handleEliminar(m.id)}
-              className="px-2 py-1 rounded text-xs bg-red-600 hover:bg-red-700 text-white"
-            >
-              Eliminar
-            </button>
-          </div>
-        );
-      },
-    },
-  ];
 
   const fetchMensajes = async () => {
     try {
       setLoading(true);
       const res = await fetch(
-        `http://localhost:3001/api/contactanos/listar?page=${page}&size=${size}`,
-        { headers: { Authorization: `Bearer ${token}`! } }
+        `http://localhost:3001/api/contactanos/listar?page=1&size=${size}`,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       if (!res.ok) throw new Error("Error al cargar mensajes");
       const data = await res.json();
       setMensajes(data.mensajes);
-      setTotalPages(data.totalPages);
     } catch (err: any) {
-      console.error(err);
       setError(err.message || "Error de servidor");
     } finally {
       setLoading(false);
@@ -143,21 +50,17 @@ export function ListarContactanos() {
 
   useEffect(() => {
     fetchMensajes();
-  }, [page]);
+  }, []);
 
   const handleToggleEstado = async (id: number) => {
     try {
       const res = await fetch(
         `http://localhost:3001/api/contactanos/alternar/${id}`,
-        {
-          method: "PATCH",
-          headers: { Authorization: `Bearer ${token}`! },
-        }
+        { method: "PATCH", headers: { Authorization: `Bearer ${token}` } }
       );
       if (!res.ok) throw new Error("No se pudo alternar estado");
       await fetchMensajes();
     } catch (err) {
-      console.error(err);
       setError("Error al alternar estado");
     }
   };
@@ -166,17 +69,73 @@ export function ListarContactanos() {
     try {
       const res = await fetch(
         `http://localhost:3001/api/contactanos/eliminar/${id}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}`! },
-        }
+        { method: "DELETE", headers: { Authorization: `Bearer ${token}` } }
       );
       if (!res.ok) throw new Error("No se pudo eliminar");
       await fetchMensajes();
     } catch (err) {
-      console.error(err);
       setError("Error al eliminar mensaje");
     }
+  };
+
+  const onCellPrepared = (e: any) => {
+    if (e.rowType === "header") {
+      e.cellElement.style.backgroundColor = "#24706c";
+      e.cellElement.style.color = "#fff";
+    }
+  };
+
+  const renderFecha = (data: any) => {
+    if (!data.value) return <span>-</span>;
+    return (
+      <span>
+        {new Date(data.value).toLocaleString("es-PE", {
+          day: "2-digit", month: "2-digit", year: "numeric",
+          hour: "2-digit", minute: "2-digit",
+        })}
+      </span>
+    );
+  };
+
+  const renderEstado = (data: any) => (
+    <span style={{
+      backgroundColor: data.value === "Pendiente" ? "#fb923c" : "#16a34a",
+      color: "white",
+      fontWeight: 600,
+      padding: "2px 10px",
+      borderRadius: "999px",
+      fontSize: "12px",
+    }}>
+      {data.value}
+    </span>
+  );
+
+  const renderAcciones = (data: any) => {
+    const m = data.data;
+    return (
+      <div style={{ display: "flex", gap: "4px" }}>
+        <button
+          onClick={() => handleToggleEstado(m.id)}
+          style={{
+            padding: "3px 8px", borderRadius: "4px", fontSize: "12px",
+            color: "white", border: "none", cursor: "pointer",
+            backgroundColor: m.estado === "Pendiente" ? "#16a34a" : "#fb923c",
+          }}
+        >
+          {m.estado === "Pendiente" ? "Atender" : "Pendiente"}
+        </button>
+        <button
+          onClick={() => handleEliminar(m.id)}
+          style={{
+            padding: "3px 8px", borderRadius: "4px", fontSize: "12px",
+            color: "white", border: "none", cursor: "pointer",
+            backgroundColor: "#dc2626",
+          }}
+        >
+          Eliminar
+        </button>
+      </div>
+    );
   };
 
   return (
@@ -186,21 +145,53 @@ export function ListarContactanos() {
       </h1>
 
       {error && <div className="mb-4 text-red-600">{error}</div>}
-      {loading ? (
-        <p>Cargando mensajes...</p>
-      ) : (
-        <div className="w-full max-w-6xl">
-          <Box sx={{ height: 600, width: "100%" }}>
-            <DataGrid
-              rows={mensajes}
-              columns={columns}
-              loading={loading}
-              pageSizeOptions={[10]}
-              disableRowSelectionOnClick
-            />
-          </Box>
-        </div>
-      )}
+
+      <div className="w-full max-w-6xl">
+        <DataGrid
+          dataSource={mensajes}
+          keyExpr="id"
+          showBorders={true}
+          showRowLines={true}
+          rowAlternationEnabled={true}
+          columnAutoWidth={true}
+          allowColumnReordering={true}
+          allowColumnResizing={true}
+          columnResizingMode="widget"
+          onCellPrepared={onCellPrepared}
+        >
+          <Export enabled={true} />
+          <ColumnFixing enabled={true} />
+          <LoadPanel enabled={loading} />
+          <FilterRow visible={true} />
+          <HeaderFilter visible={true} />
+          <Scrolling
+            mode="virtual"
+            rowRenderingMode="virtual"
+            useNative={true}
+            preloadEnabled={false}
+            renderAsync={false}
+          />
+
+          <Column dataField="id" caption="ID" width={60} />
+          <Column dataField="nombre" caption="Nombre" minWidth={120} />
+          <Column dataField="email" caption="Email" minWidth={180} />
+          <Column dataField="telefono" caption="Teléfono" minWidth={100} />
+          <Column dataField="mensaje" caption="Mensaje" minWidth={200} />
+          <Column dataField="fecha_emision" caption="Fecha Emisión" minWidth={160} cellRender={renderFecha} />
+          <Column dataField="estado" caption="Estado" minWidth={100} cellRender={renderEstado} />
+          <Column dataField="atendido_por" caption="Atendido Por" minWidth={120} />
+          <Column dataField="fecha_atencion" caption="Fecha Atención" minWidth={160} cellRender={renderFecha} />
+          <Column
+            caption="Acciones"
+            width={160}
+            fixed={true}
+            fixedPosition="right"
+            allowSorting={false}
+            allowFiltering={false}
+            cellRender={renderAcciones}
+          />
+        </DataGrid>
+      </div>
     </div>
   );
 }
