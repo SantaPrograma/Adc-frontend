@@ -61,7 +61,7 @@ export default function Ofrecemos() {
     ];
 
     return (
-        <section className="py-12 px-6 md:px-16 lg:px-24">
+        <section className="py-12 px-6 md:px-16 lg:px-24 bg-white">
             <h2 className="text-3xl md:text-4xl font-bold text-center text-[#15993b] mb-8">
                 Descubre todo lo que ofrecemos
             </h2>

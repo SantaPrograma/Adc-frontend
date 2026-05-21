@@ -26,9 +26,11 @@ export default function RootLayout({
 }>) {
   return (
     <ProtectedRoute rolesPermitidos={["admin"]}>
-      <div className="flex">
-        <SideBarAdmin />
-        <main className="ml-64 p-6 w-full">{children}</main>
+      <div className="min-h-screen bg-white">
+        <div className="flex h-full">
+          <SideBarAdmin />
+          <main className="ml-64 p-6 w-full">{children}</main>
+        </div>
       </div>
     </ProtectedRoute>
   );
